@@ -1,7 +1,7 @@
 /*
  * @Date: 2022-05-24 22:21:12
  * @LastEditors: LSY
- * @LastEditTime: 2023-03-16 23:38:24
+ * @LastEditTime: 2023-03-21 11:35:42
  * @Description: Do not edit
  * @FilePath: /l-lib/routes/navs.ts
  */
@@ -11,6 +11,10 @@ const navs = [
   //   title: 'github',
   //   path: 'https://github.com/umijs/dumi',
   // },
+  {
+    title: 'js',
+    path: '/js',
+  },
   {
     title: '其它',
     // path: '链接是可选的',

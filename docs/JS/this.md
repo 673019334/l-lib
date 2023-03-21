@@ -1,5 +1,7 @@
 ---
-order: 49
+nav:
+  title: JS
+order: 5
 ---
 
 # this
