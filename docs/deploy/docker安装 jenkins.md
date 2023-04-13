@@ -14,7 +14,7 @@ docker pull jenkins/jenkins
 docker images
 ```
 
-![image-20230403164449348](/Users/lsy/FE/07-笔记/l-lib/docs/assets/img/docker/dockerImg.png)
+![image-20230403164449348](../assets/img/docker/dockerImg.png)
 
 3.启动 docker
 
@@ -22,7 +22,7 @@ docker images
 docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins
 ```
 
-![image-20230403191601962](/Users/lsy/Library/Application Support/typora-user-images/image-20230403191601962.png)
+<!-- ![image-20230403191601962](./assets/img/docker/) -->
 
 4.启动成功后打开，出现如下页面
 
