@@ -1,16 +1,16 @@
 /*
  * @Date: 2022-05-24 22:21:12
  * @LastEditors: LSY
- * @LastEditTime: 2023-03-21 17:36:37
+ * @LastEditTime: 2023-04-17 14:44:19
  * @Description: Do not edit
  * @FilePath: /l-lib/routes/navs.ts
  */
 const navs = [
   // null, // null 值代表保留约定式生成的导航，只做增量配置
-  // {
-  //   title: 'github',
-  //   path: 'https://github.com/umijs/dumi',
-  // },
+  {
+    title: 'css',
+    path: '/css',
+  },
   {
     title: 'js',
     path: '/jsdoc',
@@ -21,7 +21,7 @@ const navs = [
     // 可通过如下形式嵌套二级导航菜单，目前暂不支持更多层级嵌套：
     children: [
       { title: '浏览器', path: '/浏览器' },
-      // { title: '第二项', path: '/guide' },
+      { title: 'webpack', path: '/webpack' },
     ],
   },
 ];
