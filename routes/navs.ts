@@ -1,7 +1,7 @@
 /*
  * @Date: 2022-05-24 22:21:12
  * @LastEditors: LSY
- * @LastEditTime: 2023-04-17 14:44:19
+ * @LastEditTime: 2023-07-05 22:37:15
  * @Description: Do not edit
  * @FilePath: /l-lib/routes/navs.ts
  */
@@ -14,6 +14,10 @@ const navs = [
   {
     title: 'js',
     path: '/jsdoc',
+  },
+  {
+    title: 'tool',
+    path: '/tool',
   },
   {
     title: '其它',
