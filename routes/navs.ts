@@ -1,7 +1,7 @@
 /*
  * @Date: 2022-05-24 22:21:12
  * @LastEditors: LSY
- * @LastEditTime: 2023-07-05 22:37:15
+ * @LastEditTime: 2024-05-28 09:11:12
  * @Description: Do not edit
  * @FilePath: /l-lib/routes/navs.ts
  */
@@ -14,6 +14,10 @@ const navs = [
   {
     title: 'js',
     path: '/jsdoc',
+  },
+  {
+    title: '框架',
+    children: [{ title: 'vue3.0', path: '/vue3' }],
   },
   {
     title: 'tool',
