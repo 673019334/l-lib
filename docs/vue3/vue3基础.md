@@ -219,3 +219,264 @@ function onAddAge() {
 <script lang="ts" setup>
 </script>
 ```
+
+### ref
+
+> 定义响应式变量
+
+- **语法**
+
+  ```
+  let xxx = ref(变量初始值);
+  ```
+
+- **返回值：**一个`RefImpl`的实例对象，简称`ref对象`或`ref`，`ref`对象的`value`**属性是响应式的**
+
+- **注意点**
+
+  - ts 中操作访问数据需要添加`.value`;但是模版中不需要`.value`，直接使用即可。
+  - `let xxx = ref(变量初始值);`,xxx 不是响应式的，xxx.vaule 是响应式的。
+
+### reactive
+
+> 定义一个响应式的对象，基本的数据类型不要使用它，要用 ref,否则会报错
+
+- **语法**
+
+  ```
+  let xxx = reactive(源对象初始值);
+  ```
+
+- **返回值**
+
+  一个 proxy 的实例对象，简称:响应式对象
+
+- **注意点**
+  - reactive 的响应式是深层次的
+
+### ref 和 reactive 的区别
+
+- ref 接收的数据可以是基本类型也可以对象类型，reactive 只能对象类型
+
+- 若 ref 接收的是对象类型，内部趋势也是调用了 reactive 函数
+
+- ref 创建的变量访问必须使用.value (可以使用 volar 插件自动添加.value)
+
+  <img src="https://raw.githubusercontent.com/673019334/image-oss/main/202405301643777.png" alt="自动补充value" style="zoom:60%;" />
+
+- reactive 重新分配一个对象，会失去响应式（可以使用 Object.assign 去整体替换）
+
+  Object.assign(xxx,{name:'cansy'})
+
+**使用原则**
+
+1.如果要创建一个基本类型，就使用 ref
+
+2.如果创建一个响应式对象，层级不深，ref 和 reactive 都可以
+
+3.如果创建一个响应式对象，层级深，推荐使用 reactive
+
+### toRefs 和 toRef
+
+> 把一个响应式对象中的中的属性转换成 ref 对象。
+>
+> 注意：当一个对象内的值解构赋值后，也会失去响应式
+
+- toRefs 是批量转换
+- ref 是单个转换
+
+```vue
+<template>
+  姓名-{{ name }} 年龄-{{ age }}
+  <button @click="onAddAge">增加年龄</button>
+</template>
+```
+
+```js
+<script setup lang="ts">
+  import {reactive ,toRefs} from 'vue';
+  const person = reactive({ name: 'zhangsan',age:100,gender });
+  let {name,age,gender} = toRefs(person);
+  let gender = toRef(person,'gender')//第一个参数响应式对象，第二个参数要结构出来的名称
+  function onAddAge(){
+    age.value  = age.value + 1;
+    console.log(age.value); //每次回类加1，但是此时页面数据不会更新
+  }
+</script>
+```
+
+### computed
+
+> 计算属性，根据已有的数据计算出新的数据
+>
+> 计算属性是有缓存的，无论模版调用多少次，只要依赖的数据不发生改变，就只会执行一次，method 没有缓存，调用多少次，就会执行多少次
+
+- 计算属性实际上是一个 ref 响应式对象，因此复制的时候需要加上.value
+
+- 当只读的时候 computed 的第一个参数是一个函数
+
+- 当 get/set 的时候，参数是一个对象,对象有两个属性，get/set
+
+  ```vue
+  <template>
+    <div>姓: <input type="text" v-model="firstName" /></div>
+    <div>姓: <input type="text" v-model="lastName" /></div>
+    <hr />
+    <div>全名:{{ fullName }}</div>
+    <button @click="handleChangeName">修改全名</button>
+  </template>
+  ```
+
+  ```js
+  // 需要设置属性时候的写法
+  <script setup lang="ts">
+  import { ref, computed } from 'vue'
+  let firstName = ref('张')
+  let lastName = ref('三')
+  let fullName = computed({
+    get() {
+      return firstName.value + lastName.value
+    },
+    set(val) {
+      const [str1, str2] = val.split('-')
+      firstName.value = str1
+      lastName.value = str2
+    }
+  })
+  function handleChangeName() {
+    fullName.value = 'li-si' //引起了set val的变化
+  }
+  </script>
+
+  ```
+
+  ```js
+  //只需要get的写法
+  <script setup lang="ts">
+    import {(ref, computed)} from 'vue' let firstName = ref('张') let lastName = ref('三') let
+    fullName = computed(()=> firstName.value + lastName.value) function handleChangeName(){' '}
+    {(fullName.value = 'li-si')}
+  </script>
+  ```
+
+### Watch
+
+> 监听数据的变化
+>
+> 只能监听如下四种值的变化
+
+- 1.ref 定义的数据
+- 2.reactive 定义的数据
+- 函数返回一个值（getter 函数）
+- 一个包含上述内容的数组
+
+#### 场景一
+
+> 监听 ref 定义的基本类型数据,直接写名称即可，实际上监听的是 value 的变化
+
+- watch 是一个函数
+  - 第一个参数是要监听的值，监听 ref 定义的基本类型时，不需要+.value
+  - 第二个参数是一个回调函数，函数的第一个值是发生变化前的值，第二个值是发生变化后的值
+- 停止 watch 的方式
+
+```vue
+<template>
+  <div>num : {{ sum }}</div>
+  <button @click="handleNumAdd">num +1</button>
+</template>
+```
+
+```js
+<script setup lang="ts">
+import { ref, computed ,watch} from 'vue'
+let sum = ref(0);
+function handleNumAdd(){
+  sum.value  += 1
+}
+let stopWatch = watch(sum,(newVal,oldVal)=>{
+  console.log('oldVal,newVal',oldVal,newVal)
+  if(newVal >3){
+    stopWatch()
+  }
+})
+</script>
+```
+
+#### 场景二
+
+> 监听 ref 定义的对象类型的数据，监听的是对象的地址值，若想监听对象深层数据的变化，需要手动开启深度监听
+
+- 监听的是一个地址
+- watch 是一个函数
+  - 第一个参数，是 ref 定义的对象
+  - 第二个参数回调函数
+  - 第三个参数配置项
+    - deep:true 深度监听
+    - immediate :true//立即监听
+    - 等等。。。
+- 如果修改的是 ref 中的一个属性，则 oldValue 和 newValue 都是新的值，因为它们是同一个对象
+- 如果修改的是整个 ref 对象项，newValue 就是新值,oldValue 是旧值
+
+```js
+let person = ref({
+  name: '张三',
+  age: 10,
+});
+function handleChangeName() {
+  person.value.name = 'lisi';
+}
+function handleChangeAge() {
+  person.value.age = 20;
+}
+function handleChangePerson() {
+  person.value = {
+    name: 'wangwu',
+    age: 40,
+  };
+}
+watch(
+  person,
+  (newVal, oldVal) => {
+    console.log(newVal, oldVal);
+  },
+  {
+    deep: true, //如果是修改的某个属性，需要开启深度监听才能被监听到
+  },
+);
+```
+
+#### 场景三
+
+> 监听 reactive 定义的对象类型的数据，默认开启深度监听，且无法关闭
+
+- 无法监听地址值，因为对象地址没有改变，本质上在源对象上进行的是赋值
+
+  ```js
+  let car = reactive({
+    color: 'red',
+    brand: 'xiaomi',
+  });
+  function handleChangeBrand() {
+    car.brand = 'huaiwei';
+  }
+  function handleChangeColor() {
+    car.color = 'green';
+  }
+  function handleChangeCar() {
+    car = Object.assign(car, { color: 'yellow', brand: '特斯拉' });
+  }
+  watch(car, (newVal, oldVal) => {
+    console.log(newVal, oldVal);
+  });
+  ```
+
+#### 场景四
+
+> 监听 ref 或者是 reactive 定义的对象类型数据中的某个属性
+
+- 如果该属性值不是对象类型，而是基本类型，需要写成函数形式，此时 oldValue 是旧值，newValue 是新值
+- 如果该属性依然是**对象类型**，可以直接写，也可以写成函数，建议写成函数
+
+#### 场景五
+
+> 监视上述多个数据
