@@ -476,7 +476,167 @@ watch(
 
 - 如果该属性值不是对象类型，而是基本类型，需要写成函数形式，此时 oldValue 是旧值，newValue 是新值
 - 如果该属性依然是**对象类型**，可以直接写，也可以写成函数，建议写成函数
+  - 第一个参数是函数，返回值是要监听的对象的属性
+  - 第二个参数是 监听结果的回调函数
+  - 第三个参数配置项，如果监听的属性还是复杂类型，需要监听对象内部属性的变化，需要开启深度监听
+
+```vue
+<div>监听某个属性的变化</div>
+<div>名字 {{ student.name }}</div>
+<div>学号 {{ student.no }}</div>
+<div>信息-地址 {{ student.info.house }} 信息-爱好 {{ student.info.hobby }}</div>
+<button @click="changStudentName">修改名字</button>
+<button @click="changNo">修改学号</button>
+<button @click="changeInfo">修改信息</button>
+<button @click="changeInfoHobby">修改信息-爱好</button>
+```
+
+```js
+const student = reactive({
+  no: '001',
+  name: '张三',
+  info: {
+    house: 'hangzhou',
+    hobby: '篮球',
+  },
+});
+function changNo() {
+  student.no += `~`;
+}
+function changStudentName() {
+  student.name += `·`;
+}
+function changeInfo() {
+  student.info = {
+    house: '苏州',
+    hobby: '足球',
+  };
+}
+function changeInfoHobby() {
+  student.info.hobby = '弹钢琴';
+}
+watch(
+  () => student.name,
+  () => {
+    console.log('name发生了改变');
+  },
+);
+watch(
+  () => student.info,
+  () => {
+    console.log('info发生了改变');
+  },
+  {
+    deep: true, // 如果不开启深度监听，此种方式修改数据监听不到  student.info.hobby = '弹钢琴'
+  },
+);
+```
 
 #### 场景五
 
 > 监视上述多个数据
+
+- watch 的第一个参数是数组，传入要监听的数据，如果是要监听 对象内的属性，则需要作为函数的返回值传入
+- 第二个 参数是监听的返回值，是**数组**的格式，对用的分为为传入的要监听的值
+
+### watchEffect
+
+立即运行一个函数，同时响应式的追踪其依赖，并在依赖更改时重新执行该函数
+
+**watch 和 watchEffect 的不同**
+
+- 都能监听数据的变化，监听数据变化的方式不同
+  - watch 需要明确的指出是哪个数据变化了
+  - watchEffect 不用指出哪些数据，函数中用到了哪些属性就监听哪些属性
+
+```js
+<template>
+  <div class="person">
+    <h1>需求：水温达到50℃，或水位达到20cm，则联系服务器</h1>
+    <h2 id="demo">水温：{{temp}}</h2>
+    <h2>水位：{{height}}</h2>
+    <button @click="changePrice">水温+1</button>
+    <button @click="changeSum">水位+10</button>
+  </div>
+</template>
+
+<script lang="ts" setup name="Person">
+  import {ref,watch,watchEffect} from 'vue'
+  // 数据
+  let temp = ref(0)
+  let height = ref(0)
+
+  // 方法
+  function changePrice(){
+    temp.value += 10
+  }
+  function changeSum(){
+    height.value += 1
+  }
+
+  // 用watch实现，需要明确的指出要监视：temp、height
+  watch([temp,height],(value)=>{
+    // 从value中获取最新的temp值、height值
+    const [newTemp,newHeight] = value
+    // 室温达到50℃，或水位达到20cm，立刻联系服务器
+    if(newTemp >= 50 || newHeight >= 20){
+      console.log('联系服务器')
+    }
+  })
+
+  // 用watchEffect实现，不用
+  const stopWtach = watchEffect(()=>{
+    // 室温达到50℃，或水位达到20cm，立刻联系服务器
+    if(temp.value >= 50 || height.value >= 20){
+      console.log(document.getElementById('demo')?.innerText)
+      console.log('联系服务器')
+    }
+    // 水温达到100，或水位达到50，取消监视
+    if(temp.value === 100 || height.value === 50){
+      console.log('清理了')
+      stopWtach()
+    }
+  })
+</script>
+```
+
+### 标签的 ref 属性
+
+> - 用在普通的 DOM 元素上，获取的是 DOM 元素
+> - 用在标签组件上，获取的是组件实例对象
+
+**使用方法**
+
+- 1.从 vue 中引出 ref
+- 2.元素上使用 ref 绑定 ref 定义的变量
+
+```js
+//用在普通的DOM元素上
+<div ref="testRef">哈哈</div>; //名称是ref定义的 <button @click="getDom">获取</button>
+import { ref } from 'vue';
+let testRef = ref();
+function getDom() {
+  console.log(testRef.value); //得到的是DOM元素
+}
+```
+
+```js
+// 用在组件实例上
+// 父组件
+ <HelloWord ref= "hello" />
+ <button @click="onTest">测试</button>
+  import { ref } from 'vue';
+  let hello = ref ();
+  function onTest(){
+   console.log( hello.value.name)
+  }
+//子组件
+import {ref,defineExpose} from 'vue';
+  let name = ref('张三')
+  let age = ref(18)
+  defineExpose({name,age}) //需要使用defineExpose将数据暴漏出去，父组件才能使用ref 读取到
+```
+
+### props
+
+### 自定义 hooks
