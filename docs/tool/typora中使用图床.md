@@ -1,3 +1,9 @@
+---
+nav:
+  title: typora中使用图床.md
+order: 1
+---
+
 # typora 中使用 github 图床
 
 ## 1.下载 picgo

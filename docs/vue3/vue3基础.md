@@ -58,11 +58,11 @@ vue3.0 更好的支持 ts
 
   ...
 
-## 2.创建 vue3.0 项目
+## 3.创建 vue3.0 项目
 
-### 2.1 基于 vue-cli 创建
+### 3.1 基于 vue-cli 创建
 
-### 2.2 基于 vite 创建【推荐】
+### 3.2 基于 vite 创建【推荐】
 
 vite 是新一代前端构建工具，vite 优势如下
 
@@ -106,7 +106,11 @@ npm create vue@latest
 - 加载`index.html`后，`Vite` 解析 `<script type="module" src="xxx">` 指向的`JavaScript`。
 - `Vue3`**中是通过 **`createApp` 函数创建一个应用实例。
 
-## 3.vue3.0 核心语法
+## 4.官方推荐插件
+
+![image-20240626201204907](https://raw.githubusercontent.com/673019334/image-oss/main/202406262012004.png)
+
+## 5.vue3.0 核心语法
 
 ### OptionsAPI 与 CompositionAPI
 
@@ -638,5 +642,27 @@ import {ref,defineExpose} from 'vue';
 ```
 
 ### props
+
+**父组件传值**
+
+```html
+// 传固定的值不需要添加:,传值是变量的话需要加： persons=[] <Person :list="persons" />
+```
+
+**子组件接收值**
+
+```js
+import {defineProps,withDefaults} from 'vue'
+//仅接收,数组格式，返回值是一个list
+const props = defineProps(['list']); // {list:[]}
+//接收+类型限制，对象格式
+const props = defineProps<{list:Persons}>()
+//接收+限制类型+ 指定默认值+ 限制必要性 ,需要引入 withDefaults
+const props = withDefaults( defineProps<{list:Persons}>(),{
+   list:()=>[{id:'asdasg01',name:'小猪佩奇',age:18}]
+  }
+})
+
+```
 
 ### 自定义 hooks
